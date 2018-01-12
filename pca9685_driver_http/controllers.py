@@ -1,5 +1,6 @@
 import logging
 from flask import request
+from flask import make_response
 from pca9685_driver import Device
 from querystring_parser import parser
 
@@ -41,7 +42,12 @@ def set_led_values(device_name):
     args = parser.parse(request.get_data())
     for led, value in args['led'].items():
         dev.set_pwm(int(led), int(value))
-    return create_response({'result': 'ok'})
+    resp = make_response("{'result': 'ok'})", 200)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Methods'] = 'PUT,GET, POST, DELETE, OPTIONS'
+    resp.headers['Access-Control-Allow-Headers'] = 'origin, x-requested-with, content-type'
+    return resp
+#    return create_response({'result': 'ok'})
 
 @app.route('/devices/<device_name>/pwm-frequency', methods = ['GET'])
 def get_pwm_frequency(device_name):
@@ -54,3 +60,12 @@ def set_pwm_frequency(device_name):
     value = int(request.form['value'])
     devices[device_name].set_pwm_frequency(value)
     return create_response({'result': 'ok'})
+
+@app.route('/devices/lamp/led', methods = ['OPTIONS'])
+def handleCOSRRequest ():
+#    resp = response("Foo bar baz")
+    resp = make_response("", 200)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Methods'] = 'PUT,GET, POST, DELETE, OPTIONS'
+    resp.headers['Access-Control-Allow-Headers'] = 'origin, x-requested-with, content-type'
+    return resp
