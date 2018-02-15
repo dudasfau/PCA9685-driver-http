@@ -1,4 +1,4 @@
-#!/bin/pythone
+#!/usr/bin/python
 
 from pca9685_driver_http.app import app
 
