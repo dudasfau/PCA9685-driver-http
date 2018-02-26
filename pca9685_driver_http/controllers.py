@@ -1,4 +1,5 @@
 import logging
+import json
 from flask import request
 from flask import make_response
 from pca9685_driver import Device
@@ -33,7 +34,11 @@ def get_led_values(device_name):
     dev = devices[device_name]
     for led in range(0, Device.ranges['led_number'][1]+1):
         result[led] = dev.get_pwm(led)
-    return create_response({'result': 'ok', 'values': result})
+	resp = make_response(json.dumps({'result': 'ok', 'values': result}), 200)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Methods'] = 'PUT,GET, POST, DELETE, OPTIONS'
+    resp.headers['Access-Control-Allow-Headers'] = 'origin, x-requested-with, content-type'
+    return resp
 
 @app.route('/devices/<device_name>/led', methods = ['PUT'])
 def set_led_values(device_name):
